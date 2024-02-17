@@ -11,7 +11,18 @@
 - 在排序后保留默认选择。
 - 使用懒加载功能，仅在下拉列表在视口中可见时进行处理。
 
-  
+## 安装
+
+1. 安装浏览器的用户脚本管理器扩展程序。常用的选项包括：
+   - Tampermonkey（适用于 [Chrome](https://chrome.google.com/webstore/detail/dhdgffkkebhmkfjojejmpbldmpobfkfo) 或 [Firefox](https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/)）
+
+2. 单击以下链接以安装用户脚本：
+   - [安装用户脚本](https://update.greasyfork.org/scripts/487528/Replace%20Dropdown%20Lists%20for%20Bangumi.user.js)
+
+## 使用说明
+
+用户脚本会自动在适用的 Bangumi 页面上执行。无需手动操作。
+
 ## 许可证
 
 MIT License
