@@ -1,19 +1,69 @@
 // ==UserScript==
 // @name         Replace Dropdown Lists for Bangumi
+// @name:zh-CN   bangumi下拉列表排序
 // @namespace    https://github.com/Adachi-Git/ReplaceDropdownListsForBangumi
-// @version      0.5
+// @version      0.6
 // @description  调整页面上的下拉列表选项顺序，保留原本的默认值，并按首字母排序，并且使用懒加载功能
 // @author       Adachi
 // @match        *://bangumi.tv/subject/*
 // @match        *://bgm.tv/subject/*
 // @match        *://chii.in/subject/*
 // @grant        none
+// @license MIT
+// @downloadURL https://update.greasyfork.org/scripts/487528/Replace%20Dropdown%20Lists%20for%20Bangumi.user.js
+// @updateURL https://update.greasyfork.org/scripts/487528/Replace%20Dropdown%20Lists%20for%20Bangumi.meta.js
 // ==/UserScript==
-
 (function() {
     'use strict';
 
     var delay = 2000; // 设置延迟执行时间，单位是毫秒
+
+    // 汉字拼音首字母映射表
+    var pinyinMap = {
+        '原': 'Y',
+        '总': 'Z',
+        '导': 'D',
+        '副': 'F',
+        '脚': 'J',
+        '分': 'F',
+        '主': 'Z',
+        '演': 'Y',
+        '音': 'Y',
+        '人': 'R',
+        '构': 'G',
+        '系': 'X',
+        '美': 'M',
+        '色': 'S',
+        '机': 'J',
+        '道': 'D',
+        '作': 'Z',
+        '动': 'D',
+        '摄': 'S',
+        'C': 'C',
+        '3': '3',
+        '监': 'J',
+        '第': 'D',
+        'O': 'O',
+        '制': 'Z',
+        '背': 'B',
+        '数': 'S',
+        '剪': 'J',
+        '插': 'C',
+        '企': 'Q',
+        '宣': 'X',
+        '录': 'L',
+        '製': 'Z',
+        '设': 'S',
+        '特': 'T',
+        '配': 'P',
+        '联': 'L',
+        '补': 'B',
+        '执': 'Z',
+        '助': 'Z',
+        '台': 'T',
+        '后': 'H',
+        '协': 'X',
+    };
 
     // 定义一个函数来处理下拉列表的逻辑
     function adjustSelectOptions(select) {
@@ -28,13 +78,34 @@
             select.remove(option.index);
         });
 
-        // 按首字母排序选项数组
+        // 按汉字的拼音首字母排序选项数组
         optionsArray.sort(function(a, b) {
-            return a.textContent.localeCompare(b.textContent);
+            var pinyinA = pinyinMap[a.textContent[0]];
+            var pinyinB = pinyinMap[b.textContent[0]];
+
+            // 如果拼音首字母不存在，则将其视为 -Infinity，确保空值被放到列表的最上面
+            pinyinA = pinyinA ? pinyinA : -Infinity;
+            pinyinB = pinyinB ? pinyinB : -Infinity;
+
+            // 排序时忽略空值
+            if (pinyinA === -Infinity && pinyinB === -Infinity) {
+                return 0;
+            } else if (pinyinA === -Infinity) {
+                return -1;
+            } else if (pinyinB === -Infinity) {
+                return 1;
+            } else {
+                return pinyinA.localeCompare(pinyinB);
+            }
         });
 
-        // 将重新排序后的选项重新添加到下拉列表中
+        // 将重新排序后的选项重新添加到下拉列表中，并在选项文本前添加拼音首字母
         optionsArray.forEach(function(option) {
+            var originalText = option.textContent;
+            var pinyin = pinyinMap[originalText[0]];
+
+            // 如果拼音首字母存在，则在文本前添加拼音首字母；否则只保留原始文本
+            option.textContent = (pinyin ? pinyin + ' - ' : '') + originalText;
             select.add(option);
         });
 
